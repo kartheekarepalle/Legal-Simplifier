@@ -1,12 +1,22 @@
-# Python
+# Ignore Python virtual environment
 venv/
+
+# Ignore Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Node
-node_modules/
-dist/
-
-# System
+# Ignore VSCode settings
 .vscode/
+
+# Ignore environment variables files
+.env
+
+# Ignore logs
 *.log
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
