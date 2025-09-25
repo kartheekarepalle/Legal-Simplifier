@@ -22,3 +22,8 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+node_modules/
+dist/
+npm-debug.log*
+yarn-error.log*
