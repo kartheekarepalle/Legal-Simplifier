@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from .extract import extract_text
 from .analysis import analyze_text, translate_text
+from mangum import Mangum  # 👈 added
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -49,3 +50,6 @@ async def translate_endpoint(payload: dict):
     except Exception as e:
         logging.exception("Translate error")
         raise HTTPException(status_code=500, detail=str(e))
+
+# 👇 ADD THIS AT THE END
+handler = Mangum(app)
