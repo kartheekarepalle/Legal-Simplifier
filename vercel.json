@@ -22,8 +22,11 @@
             "dest": "/backend/main.py"
         },
         {
-            "src": "/(.*)",
-            "dest": "/frontend/dist/$1"
+            "handle": "filesystem"
+        },
+        {
+            "src": "/.*",
+            "dest": "/frontend/dist/index.html"
         }
     ]
 }
