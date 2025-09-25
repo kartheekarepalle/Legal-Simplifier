@@ -1,8 +1,8 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from .extract import extract_text
-from .analysis import analyze_text, translate_text
-from mangum import Mangum  # 👈 added
+from backend.extract import extract_text
+from backend.analysis import analyze_text, translate_text
+from mangum import Mangum
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -11,7 +11,7 @@ app = FastAPI(title="Legal Simplifier API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # You can replace "*" with your frontend domain for security
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,7 +21,8 @@ app.add_middleware(
 def root():
     return {"message": "Legal Simplifier API is running 🚀"}
 
-@app.post("/analyze/")
+# 🔹 Updated route to match frontend fetch
+@app.post("/api/analyze/")
 async def analyze_document(file: UploadFile = File(...)):
     try:
         contents = await file.read()
@@ -36,9 +37,11 @@ async def analyze_document(file: UploadFile = File(...)):
         logging.exception("Analyze error")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/translate/")
-async def translate_endpoint(payload: dict):
+# 🔹 Updated route to match frontend fetch
+@app.post("/api/translate/")
+async def translate_endpoint(request: Request):
     try:
+        payload = await request.json()
         text = payload.get("text")
         target_language = payload.get("target_language")
         if not text or not target_language:
@@ -51,5 +54,4 @@ async def translate_endpoint(payload: dict):
         logging.exception("Translate error")
         raise HTTPException(status_code=500, detail=str(e))
 
-# 👇 ADD THIS AT THE END
 handler = Mangum(app)

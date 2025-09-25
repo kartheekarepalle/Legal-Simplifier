@@ -14,22 +14,23 @@ RISK_DICT = {
     "liability": "Describes liability or responsibility clauses."
 }
 
-# Small stopword set to make summary better (keeps it light)
 STOPWORDS = {
     "the","and","is","in","it","of","to","a","for","on","that","this","with","as","are","be","by","or",
     "an","at","from","was","were","which","has","have","had","but","not","will","can","may","such"
 }
 
 def _split_sentences(text: str):
-    # crude sentence splitter (works well enough for most docs)
     sentences = re.split(r'(?<=[.!?])\s+', text.strip())
     return [s.strip() for s in sentences if len(s.strip()) > 10]
 
 def summarize_text(text: str, max_sentences: int = 6) -> str:
-    if not text or len(text.strip()) < 200:
+    text = text or ""
+    if len(text.strip()) < 50:  # accept shorter docs safely
         return text.strip()
 
     sentences = _split_sentences(text)
+    if not sentences:
+        return text.strip()
     if len(sentences) <= max_sentences:
         return " ".join(sentences).strip()
 
@@ -40,8 +41,8 @@ def summarize_text(text: str, max_sentences: int = 6) -> str:
 
     freq = Counter(words)
     max_freq = max(freq.values()) if freq else 1
-    for k in list(freq.keys()):
-        freq[k] = freq[k] / max_freq
+    for k in freq:
+        freq[k] /= max_freq
 
     sentence_scores = []
     for i, s in enumerate(sentences):
@@ -57,7 +58,7 @@ def summarize_text(text: str, max_sentences: int = 6) -> str:
 
 def detect_risks(text: str):
     found = []
-    text_lower = text.lower()
+    text_lower = (text or "").lower()
     for kw, expl in RISK_DICT.items():
         if kw.lower() in text_lower:
             found.append(f"{kw}: {expl}")
@@ -68,13 +69,13 @@ def translate_text(text: str, target_language: str) -> str:
         return ""
     try:
         translator = GoogleTranslator(source='auto', target=target_language)
-        translated = translator.translate(text)
-        return translated
+        return translator.translate(text)
     except Exception as e:
         return f"Translation failed: {e}"
 
 def analyze_text(text: str):
-    if not text or not text.strip():
+    text = text or ""
+    if not text.strip():
         return {"summary": "", "risks": ["No text extracted from the document"]}
 
     summary = summarize_text(text, max_sentences=6)

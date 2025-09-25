@@ -31,7 +31,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/analyze/", {
+      const res = await fetch("/api/analyze/", { // ✅ updated URL for Vercel
         method: "POST",
         body: formData,
       });
@@ -48,7 +48,7 @@ function App() {
   const handleTranslate = async () => {
     if (!summary) return alert("No summary to translate");
     try {
-      const res = await fetch("http://127.0.0.1:8000/translate/", {
+      const res = await fetch("/api/translate/", { // ✅ updated URL for Vercel
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: summary, target_language: targetLang }),
@@ -65,7 +65,6 @@ function App() {
     document.body.classList.toggle("light-mode");
   };
 
-  // 🔹 Helper to add icons for risks
   const getRiskIcon = (risk) => {
     const lower = risk.toLowerCase();
     if (lower.includes("high")) return "🚨";
@@ -123,7 +122,6 @@ function App() {
         </div>
       )}
 
-      {/* 🔹 Risks Card (always visible if summary exists) */}
       {summary && (
         <div className="risks-card">
           <div className="summary-card-title">Risks Detected</div>
